@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<title>Robô Forex PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:Arial;
+text-align:center;
+margin-top:30px;
+}
+
+.box{
+background:#1e293b;
+width:350px;
+margin:auto;
+padding:25px;
+border-radius:15px;
+}
+
+#signal{
+font-size:34px;
+font-weight:bold;
+margin-top:15px;
+}
+
+#prob{
+margin-top:10px;
+}
+
+canvas{
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Robô EUR/USD</h2>
+
+<div id="trend">Carregando mercado...</div>
+
+<div id="signal"></div>
+
+<div id="prob"></div>
+
+<div id="update"></div>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+<script>
+
+let chart
+
+function gerarPreco(){
+
+let arr=[]
+
+let valor=1.08
+
+for(let i=0;i<30;i++){
+
+valor+= (Math.random()-0.5)/100
+
+arr.push(valor)
+
+}
+
+return arr
+
+}
+
+function media(arr){
+
+return arr.reduce((a,b)=>a+b)/arr.length
+
+}
+
+function rsi(prices){
+
+let ganhos=0
+let perdas=0
+
+for(let i=1;i<prices.length;i++){
+
+let dif=prices[i]-prices[i-1]
+
+if(dif>0) ganhos+=dif
+else perdas+=Math.abs(dif)
+
+}
+
+let rs=ganhos/perdas
+
+return 100-(100/(1+rs))
+
+}
+
+function analisar(){
+
+let prices=gerarPreco()
+
+let m5=media(prices.slice(-5))
+let m10=media(prices.slice(-10))
+
+let r=rsi(prices)
+
+let compra=0
+let venda=0
+
+if(m5>m10) compra++
+else venda++
+
+if(r<30) compra++
+if(r>70) venda++
+
+if(prices[prices.length-1]>prices[prices.length-2]) compra++
+else venda++
+
+let signal=""
+let trend=""
+
+if(compra>venda){
+
+signal="COMPRAR 📈"
+trend="Tendência: Alta"
+
+}else{
+
+signal="VENDER 📉"
+trend="Tendência: Baixa"
+
+}
+
+let prob=Math.floor((Math.max(compra,venda)/3)*100)
+
+document.getElementById("trend").innerHTML=trend
+document.getElementById("signal").innerHTML=signal
+document.getElementById("prob").innerHTML="Probabilidade: "+prob+"%"
+document.getElementById("update").innerHTML="Atualizado: "+new Date().toLocaleTimeString()
+
+desenhar(prices)
+
+}
+
+function desenhar(prices){
+
+let ctx=document.getElementById("chart")
+
+if(chart) chart.destroy()
+
+chart=new Chart(ctx,{
+
+type:"line",
+
+data:{
+labels:prices.map((_,i)=>i),
+datasets:[{
+label:"Preço",
+data:prices
+}]
+}
+
+})
+
+}
+
+analisar()
+
+setInterval(analisar,60000)
+
+</script>
+
+</body>
+
+</html>
