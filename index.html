@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trader AI Panel</title>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+.card{
+background:#1e293b;
+margin:20px;
+padding:20px;
+border-radius:10px;
+}
+
+button{
+background:#22c55e;
+border:none;
+padding:14px;
+font-size:18px;
+border-radius:10px;
+}
+
+#sinal{
+font-size:40px;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Trader AI Panel</h1>
+
+<p>EUR/USD • 1 minuto</p>
+
+<div class="card">
+<div id="chart"></div>
+</div>
+
+<button onclick="iniciar()">INICIAR ANÁLISE</button>
+
+<div class="card">
+<div id="rsi"></div>
+<div id="media"></div>
+<div id="mom"></div>
+<div id="prob"></div>
+<div id="sinal"></div>
+</div>
+
+<script>
+
+new TradingView.widget({
+width:"100%",
+height:400,
+symbol:"FX:EURUSD",
+interval:"1",
+theme:"dark",
+style:"1",
+container_id:"chart"
+})
+
+function iniciar(){
+
+setInterval(analisar,60000)
+
+analisar()
+
+}
+
+function analisar(){
+
+let rsi=Math.random()*100
+let media=Math.random()
+let momentum=Math.random()
+
+let compra=0
+let venda=0
+
+if(rsi<30){
+compra+=2
+}
+
+if(rsi>70){
+venda+=2
+}
+
+if(media>0.5){
+compra+=2
+}else{
+venda+=2
+}
+
+if(momentum>0.5){
+compra++
+}else{
+venda++
+}
+
+let prob=0
+let sinal=""
+
+if(compra>venda){
+
+sinal="COMPRA 🟢"
+prob=Math.floor((compra/(compra+venda))*100)
+
+}else{
+
+sinal="VENDA 🔴"
+prob=Math.floor((venda/(compra+venda))*100)
+
+}
+
+document.getElementById("rsi").innerHTML="RSI estimado: "+Math.floor(rsi)
+document.getElementById("media").innerHTML="Tendência média: "+(media>0.5?"Alta":"Baixa")
+document.getElementById("mom").innerHTML="Momentum: "+(momentum>0.5?"Forte":"Fraco")
+document.getElementById("prob").innerHTML="Probabilidade: "+prob+"%"
+document.getElementById("sinal").innerHTML=sinal
+
+}
+
+</script>
+
+</body>
+</html>
